@@ -30,6 +30,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
@@ -881,6 +882,21 @@ class NearbyParentFragment : CommonsDaggerSupportFragment(),
     fun initNearbyFilter() {
         binding!!.nearbyFilterList.root.visibility = View.GONE
         hideBottomSheet()
+        
+        // Force set the hint text and ensure it's visible
+        binding!!.nearbyFilter.searchViewLayout.searchView.queryHint = getString(R.string.nearby_search_hint)
+        binding!!.nearbyFilter.searchViewLayout.searchView.setIconifiedByDefault(false)
+        binding!!.nearbyFilter.searchViewLayout.searchView.clearFocus()
+        
+        // Try to access the internal EditText and set hint directly
+        try {
+            val searchEditText = binding!!.nearbyFilter.searchViewLayout.searchView.findViewById<EditText>(androidx.appcompat.R.id.search_src_text)
+            searchEditText?.hint = getString(R.string.nearby_search_hint)
+            searchEditText?.setHintTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to set hint on SearchView EditText")
+        }
+        
         binding!!.nearbyFilter.searchViewLayout.searchView.setOnQueryTextFocusChangeListener { v, hasFocus ->
             setLayoutHeightAlignedToWidth(
                 1.25,
